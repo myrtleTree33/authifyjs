@@ -8,7 +8,7 @@ const { AUTH_JWT_SECRET, AUTH_JWT_AUDIENCE, AUTH_JWT_ISSUER } = process.env;
  *
  * @param {*} app
  */
-const init = ({ app, userModel }) => {
+const init = ({ app, User }) => {
   app.use(passport.initialize());
 
   passport.serializeUser((user, done) => done(null, user));
@@ -30,8 +30,7 @@ const init = ({ app, userModel }) => {
   passport.use(
     new passportJwt.Strategy(jwtOptions, (payload, done) => {
       const userId = payload.sub;
-      userModel
-        .findById(userId)
+      User.findById(userId)
         .then(user => done(null, user, payload))
         .catch(err => done(err));
     })

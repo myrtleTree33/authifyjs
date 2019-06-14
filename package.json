@@ -1,7 +1,7 @@
 {
-  "name": "node-es6-starter",
+  "name": "authifyjs",
   "version": "1.0.0",
-  "description": "Node.js ES6 starter with Babel & ESLint",
+  "description": "Integrate authentication easily",
   "main": "dist/index.js",
   "babel": {
     "presets": [
@@ -60,11 +60,13 @@
     "babel-plugin-transform-object-rest-spread": "^6.26.0",
     "bcrypt": "^3.0.6",
     "cheerio": "^1.0.0-rc.2",
+    "http-errors": "^1.7.2",
     "moment": "^2.22.2",
     "mongoose": "^5.5.13",
     "mongoose-hidden": "^1.6.1",
     "passport": "^0.4.0",
     "passport-jwt": "^4.0.0",
+    "passport-local": "^1.0.0",
     "request": "^2.88.0",
     "string-strip-html": "^3.2.0"
   }

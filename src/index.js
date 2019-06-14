@@ -1,8 +1,9 @@
+import authify from './lib/authify';
 
 export default function app() {
-    //begin writing your code here
+  return authify;
 }
 
 if (require.main === module) {
-    app();
+  app();
 }
