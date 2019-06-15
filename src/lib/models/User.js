@@ -17,21 +17,23 @@ const userSchema = new Schema({
     type: String,
     select: false
   },
-  details: new Schema({
-    _id: false,
+  details: {
     firstName: String,
     lastName: String
-  }),
+  },
   social: [
-    {
+    new Schema({
       provider: {
         type: String,
         required: true
       },
-      id: String,
+      id: {
+        type: String,
+        required: true
+      },
       token: String,
       tokenSecret: String
-    }
+    })
   ],
   dateJoined: {
     type: Date,

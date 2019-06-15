@@ -1,7 +1,15 @@
 import passport from 'passport';
 import passportJwt from 'passport-jwt';
+import { Router } from 'express';
+import { ensureAuth } from '../utils';
 
 const { AUTH_JWT_SECRET, AUTH_JWT_AUDIENCE, AUTH_JWT_ISSUER } = process.env;
+
+const userRoutes = Router();
+
+userRoutes.get('/', ensureAuth, (req, res, next) => {
+  res.json({ user: req.user });
+});
 
 /**
  * Initializes passport using server-based storage (sessions)
@@ -35,6 +43,8 @@ const init = ({ app, User }) => {
         .catch(err => done(err));
     })
   );
+
+  app.use('/user', userRoutes);
 };
 
 export default init;

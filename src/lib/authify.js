@@ -1,8 +1,8 @@
 import mongoose from 'mongoose';
 
-// import facebookMapper from './mappers/facebookMapper'
 import defaultMapper from './mappers/defaultMapper';
 import classicMapper from './mappers/classicMapper';
+import facebookMapper from './mappers/facebookMapper';
 import User from './models/User';
 
 const authify = ({ mongoUri, app, userModel = User, opts = {}, jwt = {} }) => {
@@ -23,12 +23,21 @@ const authify = ({ mongoUri, app, userModel = User, opts = {}, jwt = {} }) => {
   defaultMapper({ app, User: userModel });
 
   if (useClassic) {
-    classicMapper({ app, User: userModel, opts: classic, jwt });
+    classicMapper({
+      app,
+      User: userModel,
+      opts: classic,
+      jwt
+    });
   }
 
   if (useFacebook) {
-    // TODO ------------------------
-    // facebookMapper({ app, userModel });
+    facebookMapper({
+      app,
+      User: userModel,
+      opts: facebook,
+      jwt
+    });
   }
   console.log('Authify bound.');
 };

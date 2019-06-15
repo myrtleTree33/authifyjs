@@ -1,4 +1,5 @@
 import jwt from 'jsonwebtoken';
+import passport from 'passport';
 
 export const generateAccessToken = (userId, jwt2) => {
   const { secret, issuer, audience, expiry } = jwt2;
@@ -10,3 +11,5 @@ export const generateAccessToken = (userId, jwt2) => {
     subject: userId.toString()
   });
 };
+
+export const ensureAuth = passport.authenticate('jwt', { session: false });
