@@ -1,11 +1,15 @@
 import passport from 'passport';
 import LocalStrategy from 'passport-local';
 import bcrypt from 'bcrypt';
-import createError from 'http-errors';
 
 import { generateAccessToken } from '../utils';
 
-const init = ({ app, User }) => {
+const init = ({ app, User, opts, jwt }) => {
+  const {
+    endpointNew = '/auth/classic/new',
+    endpointLogin = '/auth/classic/token'
+  } = opts;
+
   passport.use(
     new LocalStrategy(
       {
@@ -43,44 +47,44 @@ const init = ({ app, User }) => {
   );
 
   // Init classic token verification
-  app.post(
-    '/auth/classic/token',
-    passport.authenticate('local'),
-    (req, res) => {
-      const { user } = req;
-      const u = user.toJSON();
+  app.post(endpointLogin, passport.authenticate('local'), (req, res) => {
+    const { user } = req;
+    const u = user.toJSON();
 
-      // Ensure sensitive info not passed
-      u.social = null;
-      delete u.passwordHash;
+    // Ensure sensitive info not passed
+    u.social = null;
+    delete u.passwordHash;
 
-      // Create a new access token
-      const token = generateAccessToken(u.id);
-      return res.json({ token, user: u });
-    }
-  );
+    // Create a new access token
+    const token = generateAccessToken(u.id, jwt);
+    return res.json({ token, user: u });
+  });
 
   // Creates a new user
-  app.post('/auth/classic/new', (req, res, next) => {
-    const { email, password, firstName, lastName } = req.body;
-    const passwordHash = bcrypt.hashSync(password, 10);
-    new User({
-      email,
-      passwordHash,
-      details: {
-        firstName,
-        lastName
-      },
-      social: null
-    }).save((err, user) => {
-      if (err) {
-        return next(createError(400, 'Error creating user'));
-      }
-      const u = user.toObject();
-      delete u.passwordHash;
-      u.social = null;
-      return res.json({ user: u });
-    });
+  app.post(endpointNew, async (req, res, next) => {
+    try {
+      const { email, password, firstName, lastName } = req.body;
+      const passwordHash = bcrypt.hashSync(password, 10);
+      const user = new User({
+        email,
+        passwordHash,
+        details: {
+          firstName,
+          lastName
+        },
+        social: null,
+        role: 'user'
+      });
+
+      const newUser = await user.save();
+      const formattedUser = newUser.toObject();
+      delete formattedUser.passwordHash;
+      return res.json({ user: formattedUser });
+    } catch (err) {
+      res.status(400).json({
+        message: `Issue creating user.`
+      });
+    }
   });
 
   console.log('Initiated Classic login auth!');
